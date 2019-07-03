@@ -23,7 +23,7 @@ from redis.client import Script
 
 from sentry.tsdb.base import BaseTSDB
 from sentry.utils.dates import to_datetime, to_timestamp
-from sentry.utils.redis import check_cluster_versions, get_cluster_from_options
+from sentry.utils.redis import check_cluster_versions, get_cluster_from_options, redis_clusters
 from sentry.utils.versioning import Version
 from six.moves import reduce
 
@@ -120,7 +120,7 @@ class RedisTSDB(BaseTSDB):
     DEFAULT_SKETCH_PARAMETERS = SketchParameters(3, 128, 50)
 
     def __init__(self, prefix='ts:', vnodes=64, **options):
-        self.cluster, options = get_cluster_from_options('SENTRY_TSDB_OPTIONS', options)
+        self.cluster, options = get_cluster_from_options('SENTRY_TSDB_OPTIONS', options, cluster_manager=redis_clusters)
         self.prefix = prefix
         self.vnodes = vnodes
         self.enable_frequency_sketches = options.pop('enable_frequency_sketches', False)
